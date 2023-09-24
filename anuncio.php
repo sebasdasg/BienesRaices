@@ -1,52 +1,61 @@
 <?php
 
+//Validar la URL por ID 
+$id = $_GET['id'];
+$id = filter_var($id, FILTER_VALIDATE_INT);
+
+if (!$id) {
+  header('Location: /bienesraices/anuncios.php');
+}
+
+//Base de datos
+//Importar base de datos
+/* require '../bienesraices/includes/config/database.php'; */
+require __DIR__ . '/includes/config/database.php';
+$db = conectarDB();
+
+//Obtener los datos de la propiedad
+$query = "SELECT * FROM propiedades WHERE id = ${id}";
+$resultado = mysqli_query($db, $query);
+
+if ($resultado->num_rows === 0) {
+  header('Location: /bienesraices/index.php');
+}
+
+$propiedad = mysqli_fetch_assoc($resultado);
+
 require 'includes/funciones.php';
 
 incluirTemplate('header');
 /* include './includes/templates/header.php' */
 ?>
 <main class="contenedor seccion contenido-centrado">
-  <h1>Casa en Venta Frente al Bosque</h1>
-  <picture>
-    <source srcset="build/img/destacada.webp" type="image/webp" />
-    <source srcset="build/img/destacada.jpg" type="image/jpeg" />
-    <img loading="lazy" src="build/img/destacada.jpg" alt="imagen de la propiedad" />
-  </picture>
+  <h1><?php echo $propiedad['titulo']; ?></h1>
+
+  <img loading="lazy" src="/bienesraices/imagenes/<?php echo $propiedad['imagen']; ?>" alt="imagen de la propiedad" />
 
   <div class="resumen-propiedad">
-    <p class="precio">$3,000,000</p>
+    <p class="precio">$<?php echo $propiedad['precio']; ?></p>
     <ul class="iconos-caracteristicas">
       <li>
         <img class="icono" loading="lazy" src="build/img/icono_wc.svg" alt="icono wc" />
-        <p>3</p>
+        <p><?php echo $propiedad['wc']; ?></p>
       </li>
       <li>
         <img class="icono" loading="lazy" src="build/img/icono_estacionamiento.svg" alt="icono wc" />
-        <p>3</p>
+        <p><?php echo $propiedad['estacionmiento']; ?></p>
       </li>
       <li>
         <img class="icono" loading="lazy" src="build/img/icono_dormitorio.svg" alt="icono wc" />
-        <p>3</p>
+        <p><?php echo $propiedad['habitaciones']; ?></p>
       </li>
     </ul>
     <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime
-      inventore repellat commodi debitis temporibus itaque laboriosam vitae
-      tempora corrupti. Quibusdam commodi perferendis non tempora minima?
-      Aperiam necessitatibus incidunt corrupti nihil? Non, ex enim eos
-      officia, excepturi, perferendis porro dignissimos dolorum magni
-      laboriosam incidunt fuga delectus quia unde vitae facere! Sed debitis
-      vero id tempora et, minima officiis sequi explicabo maiores sit dolor
-      saepe quos cum cupiditate ex ad recusandae illo perspiciatis. Impedit,
-      quis ad ab enim minus sunt obcaecati eos accusantium velit numquam
-      natus laudantium! Quis veritatis molestiae assumenda laudantium
-      ducimus nihil architecto, sunt corporis necessitatibus fugit
-      consequuntur blanditiis vitae saepe temporibus eos perspiciatis totam,
-      deleniti earum a! Natus id consequuntur animi? Explicabo natus
-      voluptate voluptates ad perspiciatis quis voluptatum?
+      <?php echo $propiedad['descripcion']; ?>
     </p>
   </div>
 </main>
 <?php
 incluirTemplate('footer');
+mysqli_close($db);
 ?>
